@@ -1,0 +1,12 @@
+{
+  "name": "reinvanoyen/dry-datalist",
+  "description": "",
+  "type": "library",
+  "minimum-stability": "dev",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Tnt\\DataList\\": "src/"
+    }
+  }
+}
