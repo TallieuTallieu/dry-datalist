@@ -128,7 +128,7 @@ class DataList implements DataListInterface
 	{
 		// Apply search
 		if ($this->searcher) {
-			if ($input->has($this->searcher->getId())) {
+			if ($input->has($this->searcher->getId()) && $input->get($this->searcher->getId())) {
 				$this->urlBuilder->setParam($this->searcher->getId(), $input->get($this->searcher->getId()));
 				$this->searcher->apply($this->repository, $input->get($this->searcher->getId()));
 			}
@@ -136,7 +136,7 @@ class DataList implements DataListInterface
 
 		// Apply sorters
 		foreach ($this->sorters as $sorter) {
-			if ($input->has($sorter->getId())) {
+			if ($input->has($sorter->getId()) && $input->get($sorter->getId())) {
 				$this->urlBuilder->setParam($sorter->getId(), $input->get($sorter->getId()));
 				$sorter->apply($this->repository, $input->get($sorter->getId()));
 			}
@@ -144,7 +144,7 @@ class DataList implements DataListInterface
 
 		// Apply filters
 		foreach ($this->filters as $filter) {
-			if ($input->has($filter->getId())) {
+			if ($input->has($filter->getId()) && $input->get($filter->getId())) {
 				$this->urlBuilder->setParam($filter->getId(), $input->get($filter->getId()));
 				$filter->apply($this->repository, $input->get($filter->getId()));
 			}
@@ -152,7 +152,7 @@ class DataList implements DataListInterface
 
 		// Apply pagination
 		if ($this->paginator) {
-			if ($input->has($this->paginator->getId())) {
+			if ($input->has($this->paginator->getId()) && $input->get($this->paginator->getId())) {
 				$this->urlBuilder->setParam($this->paginator->getId(), $input->get($this->paginator->getId()));
 				$this->paginator->apply($this->repository, $input->get($this->paginator->getId()));
 			} else {

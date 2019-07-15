@@ -8,7 +8,7 @@ use Tnt\Dbi\QueryBuilder;
 class OrLike implements CriteriaInterface
 {
 	/**
-	 * @var array $column
+	 * @var array $columns
 	 */
 	private $columns;
 
@@ -18,7 +18,7 @@ class OrLike implements CriteriaInterface
 	private $value;
 
 	/**
-	 * Equals constructor.
+	 * OrLike constructor.
 	 * @param mixed $column
 	 * @param $value
 	 */

@@ -21,6 +21,11 @@ class SimplePaginator extends Paginator
 	private $currentPage;
 
 	/**
+	 * @var int $pagesCount
+	 */
+	private $pageCount;
+
+	/**
 	 * SimplePaginator constructor.
 	 * @param int $perPage
 	 */
@@ -35,8 +40,8 @@ class SimplePaginator extends Paginator
 	 */
 	function apply(PaginatableInterface $repository, $currentPage)
 	{
-		$pageCount = ceil($this->getDataList()->getResultCount() / $this->perPage);
-		$this->currentPage = ( $currentPage > 0 ? ( min( $currentPage, $pageCount  ) ) : $this->getDefaultPage() );
+		$this->pageCount = ceil($this->getDataList()->getResultCount() / $this->perPage);
+		$this->currentPage = ( $currentPage > 0 ? ( min( $currentPage, $this->pageCount  ) ) : $this->getDefaultPage() );
 		$repository->paginate($this->currentPage, $this->perPage);
 	}
 
@@ -70,5 +75,22 @@ class SimplePaginator extends Paginator
 	public function getPrevPageUrl(): string
 	{
 		return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $this->getCurrentPage() - 1)->build();
+	}
+
+	/**
+	 * @param string $page
+	 * @return string
+	 */
+	function getUrlForPage(string $page): string
+	{
+		return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $page)->build();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPageCount(): int
+	{
+		return $this->pageCount;
 	}
 }

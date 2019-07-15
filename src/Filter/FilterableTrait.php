@@ -3,13 +3,13 @@
 namespace Tnt\DataList\Filter;
 
 use Tnt\DataList\Contracts\Filter\FilterableInterface;
-use Tnt\Dbi\Criteria\Equals;
+use Tnt\DataList\Filter\Criteria\OrEquals;
 
 trait FilterableTrait
 {
-	public function filter($column, $value): FilterableInterface
+	public function filter($column, array $values): FilterableInterface
 	{
-		$this->addCriteria(new Equals($column, $value));
+		$this->addCriteria(new OrEquals($column, $values));
 
 		return $this;
 	}

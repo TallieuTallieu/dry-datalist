@@ -4,10 +4,10 @@ namespace Tnt\DataList\Filter;
 
 use Tnt\DataList\Contracts\Filter\FilterableInterface;
 
-class EqualsFilter extends Filter
+class MultiEqualsFilter extends Filter
 {
 	/**
-	 * @var mixed $column
+	 * @var mixed $columns
 	 */
 	private $column;
 
@@ -26,6 +26,8 @@ class EqualsFilter extends Filter
 	 */
 	function apply(FilterableInterface $repository, $value)
 	{
-		$repository->filter($this->column, [$value,]);
+		$values = explode('-', $value);
+
+		$repository->filter($this->column, $values);
 	}
 }

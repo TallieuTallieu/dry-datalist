@@ -10,6 +10,8 @@ abstract class Paginator extends Component
 	abstract function apply(PaginatableInterface $repository, $currentPage);
 	abstract function getCurrentPage();
 	abstract function getDefaultPage();
-	abstract function getNextPageUrl();
-	abstract function getPrevPageUrl();
+	abstract function getNextPageUrl(): string;
+	abstract function getPrevPageUrl(): string;
+	abstract function getUrlForPage(string $page): string;
+	abstract function getPageCount();
 }
