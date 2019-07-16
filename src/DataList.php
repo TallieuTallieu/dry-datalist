@@ -98,7 +98,7 @@ class DataList implements DataListInterface
 	public function addSorter(string $id, Sorter $sorter)
 	{
 		$this->registerComponent($id, $sorter);
-		$this->sorters[] = $sorter;
+		$this->sorters[$id] = $sorter;
 	}
 
 	/**
@@ -108,7 +108,7 @@ class DataList implements DataListInterface
 	public function addFilter(string $id, Filter $filter)
 	{
 		$this->registerComponent($id, $filter);
-		$this->filters[] = $filter;
+		$this->filters[$id] = $filter;
 	}
 
 	/**
@@ -167,6 +167,24 @@ class DataList implements DataListInterface
 	public function getPaginator(): Paginator
 	{
 		return $this->paginator;
+	}
+
+	/**
+	 * @param string $id
+	 * @return Filter
+	 */
+	public function getFilter(string $id): Filter
+	{
+		return $this->filters[$id];
+	}
+
+	/**
+	 * @param string $id
+	 * @return Sorter
+	 */
+	public function getSorter(string $id): Sorter
+	{
+		return $this->sorters[$id];
 	}
 
 	/**
