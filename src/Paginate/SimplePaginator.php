@@ -16,6 +16,11 @@ class SimplePaginator extends Paginator
 	private $perPage;
 
 	/**
+	 * @var bool $optional
+	 */
+	private $optional;
+
+	/**
 	 * @var int $currentPage
 	 */
 	private $currentPage;
@@ -28,10 +33,12 @@ class SimplePaginator extends Paginator
 	/**
 	 * SimplePaginator constructor.
 	 * @param int $perPage
+	 * @param bool $optional
 	 */
-	public function __construct(int $perPage)
+	public function __construct(int $perPage, bool $optional = false)
 	{
 		$this->perPage = $perPage;
+		$this->optional = $optional;
 	}
 
 	/**
@@ -40,9 +47,11 @@ class SimplePaginator extends Paginator
 	 */
 	function apply(PaginatableInterface $repository, $currentPage)
 	{
-		$this->pageCount = ceil($this->getDataList()->getResultCount() / $this->perPage);
-		$this->currentPage = ( $currentPage > 0 ? ( min( $currentPage, $this->pageCount  ) ) : $this->getDefaultPage() );
-		$repository->paginate($this->currentPage, $this->perPage);
+		if ($currentPage) {
+			$this->pageCount = ceil($this->getDataList()->getResultCount() / $this->perPage);
+			$this->currentPage = ( $currentPage > 0 ? ( min( $currentPage, $this->pageCount  ) ) : $this->getDefaultPage() );
+			$repository->paginate($this->currentPage, $this->perPage);
+		}
 	}
 
 	/**
@@ -58,7 +67,7 @@ class SimplePaginator extends Paginator
 	 */
 	public function getDefaultPage()
 	{
-		return 1;
+		return ($this->optional ? null : 1);
 	}
 
 	/**
