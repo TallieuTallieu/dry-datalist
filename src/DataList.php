@@ -14,184 +14,205 @@ use Tnt\Dbi\Repository;
 
 class DataList implements DataListInterface
 {
-	/**
-	 * @var BuilderInterface $urlBuilder
-	 */
-	private $urlBuilder;
+    /**
+     * @var BuilderInterface $urlBuilder
+     */
+    private $urlBuilder;
 
-	/**
-	 * @var Repository $repository
-	 */
-	private $repository;
+    /**
+     * @var Repository $repository
+     */
+    private $repository;
 
-	/**
-	 * @var Paginator $paginator
-	 */
-	private $paginator;
+    /**
+     * @var Paginator $paginator
+     */
+    private $paginator;
 
-	/**
-	 * @var Searcher $searcher
-	 */
-	private $searcher;
+    /**
+     * @var Searcher $searcher
+     */
+    private $searcher;
 
-	/**
-	 * @var array $sorters
-	 */
-	private $sorters = [];
+    /**
+     * @var array $sorters
+     */
+    private $sorters = [];
 
-	/**
-	 * @var array $filters
-	 */
-	private $filters = [];
+    /**
+     * @var array $filters
+     */
+    private $filters = [];
 
-	/**
-	 * DataList constructor.
-	 * @param Repository $repository
-	 * @param BuilderInterface $urlBuilder
-	 */
-	public function __construct(Repository $repository, BuilderInterface $urlBuilder)
-	{
-		$this->repository = $repository;
-		$this->urlBuilder = $urlBuilder;
-	}
+    /**
+     * @var Sorter $defaultSorter
+     */
+    private $defaultSorter;
 
-	/**
-	 * @return ResultSet
-	 */
-	public function getResults(): ResultSet
-	{
-		return $this->repository->get();
-	}
+    /**
+     * DataList constructor.
+     * @param Repository $repository
+     * @param BuilderInterface $urlBuilder
+     */
+    public function __construct(Repository $repository, BuilderInterface $urlBuilder)
+    {
+        $this->repository = $repository;
+        $this->urlBuilder = $urlBuilder;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getResultCount(): int
-	{
-		return count($this->repository->get());
-	}
+    /**
+     * @return ResultSet
+     */
+    public function getResults(): ResultSet
+    {
+        return $this->repository->get();
+    }
 
-	/**
-	 * @param string $id
-	 * @param Searcher $searcher
-	 */
-	public function setSearcher(string $id, Searcher $searcher)
-	{
-		$this->registerComponent($id, $searcher);
-		$this->searcher = $searcher;
-	}
+    /**
+     * @return int
+     */
+    public function getResultCount(): int
+    {
+        return count($this->repository->get());
+    }
 
-	/**
-	 * @param string $id
-	 * @param Paginator $paginator
-	 */
-	public function setPaginator(string $id, Paginator $paginator)
-	{
-		$this->registerComponent($id, $paginator);
-		$this->paginator = $paginator;
-	}
+    /**
+     * @param string $id
+     * @param Searcher $searcher
+     */
+    public function setSearcher(string $id, Searcher $searcher)
+    {
+        $this->registerComponent($id, $searcher);
+        $this->searcher = $searcher;
+    }
 
-	/**
-	 * @param string $id
-	 * @param Sorter $sorter
-	 */
-	public function addSorter(string $id, Sorter $sorter)
-	{
-		$this->registerComponent($id, $sorter);
-		$this->sorters[$id] = $sorter;
-	}
+    /**
+     * @param string $id
+     * @param Paginator $paginator
+     */
+    public function setPaginator(string $id, Paginator $paginator)
+    {
+        $this->registerComponent($id, $paginator);
+        $this->paginator = $paginator;
+    }
 
-	/**
-	 * @param string $id
-	 * @param Filter $filter
-	 */
-	public function addFilter(string $id, Filter $filter)
-	{
-		$this->registerComponent($id, $filter);
-		$this->filters[$id] = $filter;
-	}
+    /**
+     * @param string $id
+     * @param Sorter $sorter
+     */
+    public function addSorter(string $id, Sorter $sorter)
+    {
+        $this->registerComponent($id, $sorter);
+        $this->sorters[$id] = $sorter;
+    }
 
-	/**
-	 * @param string $id
-	 * @param Component $component
-	 */
-	private function registerComponent(string $id, Component $component)
-	{
-		$component->setId($id);
-		$component->setDataList($this);
-	}
+    /**
+     * @param Sorter $sorter
+     */
+    public function setDefaultSorter(Sorter $sorter)
+    {
+        $this->defaultSorter = $sorter;
+    }
 
-	/**
-	 * @param InputInterface $input
-	 */
-	public function apply(InputInterface $input)
-	{
-		// Apply search
-		if ($this->searcher) {
-			if ($input->has($this->searcher->getId()) && $input->get($this->searcher->getId())) {
-				$this->urlBuilder->setParam($this->searcher->getId(), $input->get($this->searcher->getId()));
-				$this->searcher->apply($this->repository, $input->get($this->searcher->getId()));
-			}
-		}
+    /**
+     * @param string $id
+     * @param Filter $filter
+     */
+    public function addFilter(string $id, Filter $filter)
+    {
+        $this->registerComponent($id, $filter);
+        $this->filters[$id] = $filter;
+    }
 
-		// Apply sorters
-		foreach ($this->sorters as $sorter) {
-			if ($input->has($sorter->getId()) && $input->get($sorter->getId())) {
-				$this->urlBuilder->setParam($sorter->getId(), $input->get($sorter->getId()));
-				$sorter->apply($this->repository, $input->get($sorter->getId()));
-			}
-		}
+    /**
+     * @param string $id
+     * @param Component $component
+     */
+    private function registerComponent(string $id, Component $component)
+    {
+        $component->setId($id);
+        $component->setDataList($this);
+    }
 
-		// Apply filters
-		foreach ($this->filters as $filter) {
-			if ($input->has($filter->getId()) && $input->get($filter->getId())) {
-				$this->urlBuilder->setParam($filter->getId(), $input->get($filter->getId()));
-				$filter->apply($this->repository, $input->get($filter->getId()));
-			}
-		}
+    /**
+     * @param InputInterface $input
+     */
+    public function apply(InputInterface $input)
+    {
+        // Apply search
+        if ($this->searcher) {
+            if ($input->has($this->searcher->getId()) && $input->get($this->searcher->getId())) {
+                $this->urlBuilder->setParam($this->searcher->getId(), $input->get($this->searcher->getId()));
+                $this->searcher->apply($this->repository, $input->get($this->searcher->getId()));
+            }
+        }
 
-		// Apply pagination
-		if ($this->paginator) {
-			if ($input->has($this->paginator->getId()) && $input->get($this->paginator->getId())) {
-				$this->urlBuilder->setParam($this->paginator->getId(), $input->get($this->paginator->getId()));
-				$this->paginator->apply($this->repository, $input->get($this->paginator->getId()));
-			} else {
-				$this->paginator->apply($this->repository, $this->paginator->getDefaultPage());
-			}
-		}
-	}
+        // Apply sorters
+        $sorting = false;
+        foreach ($this->sorters as $sorter) {
 
-	/**
-	 * @return Paginator
-	 */
-	public function getPaginator(): Paginator
-	{
-		return $this->paginator;
-	}
+            if ($input->has($sorter->getId()) && $input->get($sorter->getId())) {
+                $sorting = true;
+                $this->urlBuilder->setParam($sorter->getId(), $input->get($sorter->getId()));
+                $sorter->apply($this->repository, $input->get($sorter->getId()));
+            }
+        }
 
-	/**
-	 * @param string $id
-	 * @return Filter
-	 */
-	public function getFilter(string $id): Filter
-	{
-		return $this->filters[$id];
-	}
+        // Check if we need the default sorter
+        if (! $sorting && $this->defaultSorter) {
+            $this->defaultSorter->apply($this->repository);
+        }
 
-	/**
-	 * @param string $id
-	 * @return Sorter
-	 */
-	public function getSorter(string $id): Sorter
-	{
-		return $this->sorters[$id];
-	}
+        // Apply filters
+        foreach ($this->filters as $filter) {
+            if ($input->has($filter->getId()) && $input->get($filter->getId())) {
+                $this->urlBuilder->setParam($filter->getId(), $input->get($filter->getId()));
+                $filter->apply($this->repository, $input->get($filter->getId()));
+            }
+        }
 
-	/**
-	 * @return BuilderInterface
-	 */
-	public function getUrlBuilder(): BuilderInterface
-	{
-		return $this->urlBuilder;
-	}
+        // Apply pagination
+        if ($this->paginator) {
+            if ($input->has($this->paginator->getId()) && $input->get($this->paginator->getId())) {
+                $this->urlBuilder->setParam($this->paginator->getId(), $input->get($this->paginator->getId()));
+                $this->paginator->apply($this->repository, $input->get($this->paginator->getId()));
+            } else {
+                $this->paginator->apply($this->repository, $this->paginator->getDefaultPage());
+            }
+        }
+    }
+
+    /**
+     * @return Paginator
+     */
+    public function getPaginator(): Paginator
+    {
+        return $this->paginator;
+    }
+
+    /**
+     * @param string $id
+     * @return Filter
+     */
+    public function getFilter(string $id): Filter
+    {
+        return $this->filters[$id];
+    }
+
+    /**
+     * @param string $id
+     * @return Sorter
+     */
+    public function getSorter(string $id): Sorter
+    {
+        return $this->sorters[$id];
+    }
+
+    /**
+     * @return BuilderInterface
+     */
+    public function getUrlBuilder(): BuilderInterface
+    {
+        return $this->urlBuilder;
+    }
 }
