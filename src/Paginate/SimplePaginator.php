@@ -57,7 +57,7 @@ class SimplePaginator extends Paginator
     /**
      * @return int
      */
-    public function getCurrentPage():? int
+    public function getCurrentPage(): ?int
     {
         return $this->currentPage ? $this->currentPage : $this->getDefaultPage();
     }
