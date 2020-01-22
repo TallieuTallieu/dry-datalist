@@ -150,7 +150,6 @@ class DataList implements DataListInterface
         // Apply sorters
         $sorting = false;
         foreach ($this->sorters as $sorter) {
-
             if ($input->has($sorter->getId()) && $input->get($sorter->getId())) {
                 $sorting = true;
                 $this->urlBuilder->setParam($sorter->getId(), $input->get($sorter->getId()));
@@ -165,7 +164,7 @@ class DataList implements DataListInterface
 
         // Apply filters
         foreach ($this->filters as $filter) {
-            if ($input->has($filter->getId()) && $input->get($filter->getId())) {
+            if ($input->has($filter->getId())) {
                 $this->urlBuilder->setParam($filter->getId(), $input->get($filter->getId()));
                 $filter->apply($this->repository, $input->get($filter->getId()));
             }

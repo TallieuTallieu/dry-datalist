@@ -13,7 +13,7 @@ class SimpleSorter extends Sorter
 
 	/**
 	 * LikeSearcher constructor.
-	 * @param mixed $columns
+	 * @param mixed $column
 	 */
 	public function __construct($column)
 	{
