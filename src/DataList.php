@@ -214,4 +214,12 @@ class DataList implements DataListInterface
     {
         return $this->urlBuilder;
     }
+
+    /**
+     * @return Repository
+     */
+    public function getRepository(): Repository
+    {
+        return $this->repository;
+    }
 }
