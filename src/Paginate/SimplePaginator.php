@@ -48,8 +48,8 @@ class SimplePaginator extends Paginator
     function apply(PaginatableInterface $repository, $currentPage)
     {
         if ($currentPage) {
-            $this->pageCount = ceil($this->getDataList()->getResultCount() / $this->perPage);
-            $this->currentPage = ( $currentPage > 0 ? ( min( $currentPage, $this->pageCount  ) ) : $this->getDefaultPage() );
+            $this->pageCount = $this->getDataList()->getResultCount() == 0 ? 1 : ceil($this->getDataList()->getResultCount() / $this->perPage);
+            $this->currentPage = ($currentPage > 0 ? (min($currentPage, $this->pageCount)) : $this->getDefaultPage());
             $repository->paginate($this->currentPage, $this->perPage);
         }
     }
