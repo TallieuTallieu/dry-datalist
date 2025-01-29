@@ -11,13 +11,20 @@ class SimpleSorter extends Sorter
 	 */
 	private $column;
 
+    /**
+     * @var string $defaultSortMethod
+     */
+    private $defaultSortMethod;
+
 	/**
 	 * LikeSearcher constructor.
 	 * @param mixed $column
 	 */
-	public function __construct($column)
+	public function __construct($column, $defaultSortMethod = 'ASC')
 	{
 		$this->column = $column;
+
+        $this->defaultSortMethod = strtoupper($defaultSortMethod);
 	}
 
 	/**
@@ -25,12 +32,12 @@ class SimpleSorter extends Sorter
 	 * @param string $value
 	 * @param string $sortMethod
 	 */
-	public function apply(SortableInterface $repository, string $sortMethod = 'ASC')
+	public function apply(SortableInterface $repository, string $sortMethod = '')
 	{
 		$sortMethod = strtoupper($sortMethod);
 
 		if (! in_array($sortMethod, ['ASC', 'DESC'])) {
-			$sortMethod = 'ASC';
+			$sortMethod = $this->defaultSortMethod;
 		}
 
 		$repository->sort($this->column, $sortMethod);
