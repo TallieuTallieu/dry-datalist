@@ -5,7 +5,7 @@ namespace Tnt\DataList\Contracts\Url;
 interface BuilderInterface
 {
 	public function __construct(string $base);
-	public function setParam(string $key, string $value);
+	public function setParam(string $key, $value);
 	public function withParam(string $key, string $value): BuilderInterface;
 	public function build(): string;
 }

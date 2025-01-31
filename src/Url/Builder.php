@@ -27,9 +27,9 @@ class Builder implements BuilderInterface
 
 	/**
 	 * @param string $key
-	 * @param string $value
+	 * @param string | array $value
 	 */
-	public function setParam(string $key, string $value)
+	public function setParam(string $key, $value)
 	{
 		$this->params[$key] = $value;
 	}
@@ -54,7 +54,13 @@ class Builder implements BuilderInterface
 		$query = '';
 
 		foreach ($this->params as $param => $value) {
-			$query .= '&'.$param.'='.$value;
+            if(is_array($value)) {
+                foreach ($value as $item) {
+                    $query .= '&'.$param.'[]='.$item;
+                }
+            } else {
+                $query .= '&'.$param.'='.$value;
+            }
 		}
 
 		return $this->base.'?'.substr($query, 1);
