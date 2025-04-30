@@ -48,3 +48,4 @@ class ColumnSorter extends Sorter
 		$repository->sort($sortColumn, $sortDirection);
 	}
 }
+

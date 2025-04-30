@@ -7,6 +7,7 @@ use Tnt\DataList\Contracts\DataListInterface;
 use Tnt\DataList\Contracts\Input\InputInterface;
 use Tnt\DataList\Contracts\Url\BuilderInterface;
 use Tnt\DataList\Filter\Filter;
+use Tnt\DataList\Input\GetParams;
 use Tnt\DataList\Paginate\Paginator;
 use Tnt\DataList\Search\Searcher;
 use Tnt\DataList\Sort\Sorter;
@@ -135,10 +136,14 @@ class DataList implements DataListInterface
     }
 
     /**
-     * @param InputInterface $input
+     * @param ?InputInterface $input
      */
-    public function apply(InputInterface $input)
+    public function apply(?InputInterface $input = null)
     {
+        if (empty($input)) {
+          $input = new GetParams();
+        }
+
         // Apply search
         if ($this->searcher) {
             if ($input->has($this->searcher->getId()) && $input->get($this->searcher->getId())) {
