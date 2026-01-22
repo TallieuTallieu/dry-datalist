@@ -7,10 +7,14 @@ use Tnt\DataList\Filter\Criteria\OrEquals;
 
 trait FilterableTrait
 {
-	public function filter($column, array $values): FilterableInterface
+	/**
+	 * @param array<int|string> $values
+	 */
+	public function filter(string $column, array $values): FilterableInterface
 	{
 		$this->addCriteria(new OrEquals($column, $values));
 
+		/** @var FilterableInterface $this */
 		return $this;
 	}
 }

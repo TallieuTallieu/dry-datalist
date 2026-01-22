@@ -7,5 +7,5 @@ use Tnt\DataList\Contracts\Filter\FilterableInterface;
 
 abstract class Filter extends Component
 {
-	abstract function apply(FilterableInterface $repository, $value);
+	abstract public function apply(FilterableInterface $repository, mixed $value): void;
 }

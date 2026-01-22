@@ -7,5 +7,5 @@ use Tnt\DataList\Contracts\Search\SearchableInterface;
 
 abstract class Searcher extends Component
 {
-	abstract function apply(SearchableInterface $repository, string $value);
+	abstract public function apply(SearchableInterface $repository, string $value): void;
 }

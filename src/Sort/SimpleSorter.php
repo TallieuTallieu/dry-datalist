@@ -6,37 +6,21 @@ use Tnt\DataList\Contracts\Sort\SortableInterface;
 
 class SimpleSorter extends Sorter
 {
-	/**
-	 * @var mixed $columns
-	 */
-	private $column;
+	private string $column;
 
-    /**
-     * @var string $defaultSortMethod
-     */
-    private $defaultSortMethod;
+	private string $defaultSortMethod;
 
-	/**
-	 * LikeSearcher constructor.
-	 * @param mixed $column
-	 */
-	public function __construct($column, $defaultSortMethod = 'ASC')
+	public function __construct(string $column, string $defaultSortMethod = 'ASC')
 	{
 		$this->column = $column;
-
-        $this->defaultSortMethod = strtoupper($defaultSortMethod);
+		$this->defaultSortMethod = strtoupper($defaultSortMethod);
 	}
 
-	/**
-	 * @param SortableInterface $repository
-	 * @param string $value
-	 * @param string $sortMethod
-	 */
-	public function apply(SortableInterface $repository, string $sortMethod = '')
+	public function apply(SortableInterface $repository, string $sortMethod = ''): void
 	{
 		$sortMethod = strtoupper($sortMethod);
 
-		if (! in_array($sortMethod, ['ASC', 'DESC'])) {
+		if (!in_array($sortMethod, ['ASC', 'DESC'], true)) {
 			$sortMethod = $this->defaultSortMethod;
 		}
 

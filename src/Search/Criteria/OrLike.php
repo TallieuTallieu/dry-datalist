@@ -8,19 +8,14 @@ use Tnt\Dbi\QueryBuilder;
 class OrLike implements CriteriaInterface
 {
 	/**
-	 * @var array $columns
+	 * @var array<string>
 	 */
-	private $columns;
+	private array $columns;
+
+	private string $value;
 
 	/**
-	 * @var string $value
-	 */
-	private $value;
-
-	/**
-	 * OrLike constructor.
-	 * @param mixed $column
-	 * @param $value
+	 * @param array<string> $columns
 	 */
 	public function __construct(array $columns, string $value)
 	{
@@ -28,14 +23,11 @@ class OrLike implements CriteriaInterface
 		$this->value = $value;
 	}
 
-	/**
-	 * @param QueryBuilder $queryBuilder
-	 */
-	public function apply(QueryBuilder $queryBuilder)
+	public function apply(QueryBuilder $queryBuilder): void
 	{
-		$queryBuilder->whereGroup(function($queryBuilder) {
+		$queryBuilder->whereGroup(function (QueryBuilder $queryBuilder): void {
 			foreach ($this->columns as $column) {
-				$queryBuilder->where($column, 'LIKE', '%'.$this->value.'%', 'OR');
+				$queryBuilder->where($column, 'LIKE', '%' . $this->value . '%', 'OR');
 			}
 		}, 'AND');
 	}

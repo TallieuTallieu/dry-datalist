@@ -6,46 +6,41 @@ use Tnt\DataList\Contracts\Sort\SortableInterface;
 
 class ColumnSorter extends Sorter
 {
-    protected $defaultSortString;
-    protected $separator;
-    
+	protected string $defaultSortString;
+
 	/**
-	 * ColumnSorter contstruct
-     * See encatc sort-select.twig for implementation
-     * @param string $defaultSortString string containing column and direction
-     * @param string $separator string to separate column and direction
+	 * @var non-empty-string
 	 */
-	public function __construct($defaultSortString = '', $separator = '-')
+	protected string $separator;
+
+	/**
+	 * @param non-empty-string $separator
+	 */
+	public function __construct(string $defaultSortString = '', string $separator = '-')
 	{
-        $this->defaultSortString = strtoupper($defaultSortString);
-        $this->separator = $separator;
+		$this->defaultSortString = strtoupper($defaultSortString);
+		$this->separator = $separator;
 	}
 
-	/**
-	 * @param SortableInterface $repository
-	 * @param string $sortMethod
-	 */
-	public function apply(SortableInterface $repository, string $sortString = '')
+	public function apply(SortableInterface $repository, string $sortString = ''): void
 	{
-        if (empty($sortString)) {
-            $sortString = $this->defaultSortString;
-        }
-
-        $sortDefinition = explode($this->separator, $sortString);
-
-        if (!count($sortDefinition) === 2) {
-            return;
-        }
-
-        $sortColumn = $sortDefinition[0];
-        $sortDirection = strtoupper($sortDefinition[1]);
-
-		if (! in_array($sortDirection, ['ASC', 'DESC'])) {
-            return;
+		if (empty($sortString)) {
+			$sortString = $this->defaultSortString;
 		}
 
+		$sortDefinition = explode($this->separator, $sortString);
+
+		if (count($sortDefinition) !== 2) {
+			return;
+		}
+
+		$sortColumn = $sortDefinition[0];
+		$sortDirection = strtoupper($sortDefinition[1]);
+
+		if (!in_array($sortDirection, ['ASC', 'DESC'], true)) {
+			return;
+		}
 
 		$repository->sort($sortColumn, $sortDirection);
 	}
 }
-

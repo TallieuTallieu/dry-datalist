@@ -7,11 +7,11 @@ use Tnt\DataList\Contracts\Paginate\PaginatableInterface;
 
 abstract class Paginator extends Component
 {
-    abstract function apply(PaginatableInterface $repository, $currentPage);
-    abstract function getCurrentPage();
-    abstract function getDefaultPage();
-    abstract function getNextPageUrl(): string;
-    abstract function getPrevPageUrl(): string;
-    abstract function getUrlForPage(string $page): string;
-    abstract function getPageCount();
+    abstract public function apply(PaginatableInterface $repository, ?int $currentPage): void;
+    abstract public function getCurrentPage(): int;
+    abstract public function getDefaultPage(): ?int;
+    abstract public function getNextPageUrl(): string;
+    abstract public function getPrevPageUrl(): string;
+    abstract public function getUrlForPage(string $page): string;
+    abstract public function getPageCount(): int;
 }

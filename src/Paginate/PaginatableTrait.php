@@ -13,6 +13,7 @@ trait PaginatableTrait
 
         $this->addCriteria(new LimitOffset($perPage, $offset));
 
+        /** @var PaginatableInterface $this */
         return $this;
     }
 }

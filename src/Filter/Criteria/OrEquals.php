@@ -7,33 +7,25 @@ use Tnt\Dbi\QueryBuilder;
 
 class OrEquals implements CriteriaInterface
 {
-	/**
-	 * @var mixed $column
-	 */
-	private $column;
+	private string $column;
 
 	/**
-	 * @var array $values
+	 * @var array<int|string>
 	 */
-	private $values = [];
+	private array $values;
 
 	/**
-	 * OrEquals constructor.
-	 * @param mixed $column
-	 * @param array $values
+	 * @param array<int|string> $values
 	 */
-	public function __construct($column, array $values)
+	public function __construct(string $column, array $values)
 	{
 		$this->column = $column;
 		$this->values = $values;
 	}
 
-	/**
-	 * @param QueryBuilder $queryBuilder
-	 */
-	public function apply(QueryBuilder $queryBuilder)
+	public function apply(QueryBuilder $queryBuilder): void
 	{
-		$queryBuilder->whereGroup(function($queryBuilder) {
+		$queryBuilder->whereGroup(function (QueryBuilder $queryBuilder): void {
 			foreach ($this->values as $value) {
 				$queryBuilder->where($this->column, '=', $value, 'OR');
 			}

@@ -7,24 +7,19 @@ use Tnt\DataList\Contracts\Search\SearchableInterface;
 class LikeSearcher extends Searcher
 {
 	/**
-	 * @var array $columns
+	 * @var array<string>
 	 */
-	private $columns;
+	private array $columns;
 
 	/**
-	 * LikeSearcher constructor.
-	 * @param array $columns
+	 * @param array<string> $columns
 	 */
 	public function __construct(array $columns)
 	{
 		$this->columns = $columns;
 	}
 
-	/**
-	 * @param SearchableInterface $repository
-	 * @param string $value
-	 */
-	public function apply(SearchableInterface $repository, string $value)
+	public function apply(SearchableInterface $repository, string $value): void
 	{
 		$repository->search($this->columns, $value);
 	}

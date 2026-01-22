@@ -4,100 +4,57 @@ namespace Tnt\DataList\Paginate;
 
 use Tnt\DataList\Contracts\Paginate\PaginatableInterface;
 
-/**
- * Class SimplePaginator
- * @package Tnt\DataList\Paginate
- */
 class SimplePaginator extends Paginator
 {
-    /**
-     * @var int $perPage
-     */
-    private $perPage;
+    private int $perPage;
 
-    /**
-     * @var bool $optional
-     */
-    private $optional;
+    private bool $optional;
 
-    /**
-     * @var int $currentPage
-     */
-    private $currentPage;
+    private int $currentPage = 1;
 
-    /**
-     * @var int $pagesCount
-     */
-    private $pageCount;
+    private int $pageCount = 1;
 
-    /**
-     * SimplePaginator constructor.
-     * @param int $perPage
-     * @param bool $optional
-     */
     public function __construct(int $perPage, bool $optional = false)
     {
         $this->perPage = $perPage;
         $this->optional = $optional;
     }
 
-    /**
-     * @param PaginatableInterface $repository
-     * @param $currentPage
-     */
-    function apply(PaginatableInterface $repository, $currentPage)
+    public function apply(PaginatableInterface $repository, ?int $currentPage): void
     {
-        if ($currentPage) {
-            $this->pageCount = $this->getDataList()->getResultCount() == 0 ? 1 : ceil($this->getDataList()->getResultCount() / $this->perPage);
-            $this->currentPage = ($currentPage > 0 ? (min($currentPage, $this->pageCount)) : $this->getDefaultPage());
+        if ($currentPage !== null) {
+            $resultCount = $this->getDataList()->getResultCount();
+            $this->pageCount = $resultCount === 0 ? 1 : (int) ceil($resultCount / $this->perPage);
+            $this->currentPage = $currentPage > 0 ? min($currentPage, $this->pageCount) : ($this->getDefaultPage() ?? 1);
             $repository->paginate($this->currentPage, $this->perPage);
         }
     }
 
-    /**
-     * @return int
-     */
-    public function getCurrentPage(): ?int
+    public function getCurrentPage(): int
     {
-        return $this->currentPage ? $this->currentPage : $this->getDefaultPage();
+        return $this->currentPage ?: ($this->getDefaultPage() ?? 1);
     }
 
-    /**
-     * @return int
-     */
-    public function getDefaultPage()
+    public function getDefaultPage(): ?int
     {
-        return ($this->optional ? null : 1);
+        return $this->optional ? null : 1;
     }
 
-    /**
-     * @return string
-     */
     public function getNextPageUrl(): string
     {
         return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $this->getCurrentPage() + 1)->build();
     }
 
-    /**
-     * @return string
-     */
     public function getPrevPageUrl(): string
     {
         return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $this->getCurrentPage() - 1)->build();
     }
 
-    /**
-     * @param string $page
-     * @return string
-     */
-    function getUrlForPage(string $page): string
+    public function getUrlForPage(string $page): string
     {
         return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $page)->build();
     }
 
-    /**
-     * @return int
-     */
     public function getPageCount(): int
     {
         return $this->pageCount;

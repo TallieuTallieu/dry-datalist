@@ -6,26 +6,17 @@ use Tnt\DataList\Contracts\Filter\FilterableInterface;
 
 class EqualsFilter extends Filter
 {
-	/**
-	 * @var mixed $column
-	 */
-	private $column;
+	private string $column;
 
-	/**
-	 * EqualsFilter constructor.
-	 * @param $column
-	 */
-	public function __construct($column)
+	public function __construct(string $column)
 	{
 		$this->column = $column;
 	}
 
-	/**
-	 * @param FilterableInterface $repository
-	 * @param $value
-	 */
-	function apply(FilterableInterface $repository, $value)
+	public function apply(FilterableInterface $repository, mixed $value): void
 	{
-		$repository->filter($this->column, [$value,]);
+		if (is_string($value) || is_int($value)) {
+			$repository->filter($this->column, [(string) $value]);
+		}
 	}
 }

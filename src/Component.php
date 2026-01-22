@@ -4,43 +4,28 @@ namespace Tnt\DataList;
 
 abstract class Component
 {
-	/**
-	 * @var string $id
-	 */
-	private $id;
+	private string $id = '';
 
-	/**
-	 * @var DataList $dataList
-	 */
-	private $dataList;
+	private ?DataList $dataList = null;
 
-	/**
-	 * @param DataList $dataList
-	 */
-	final public function setDataList(DataList $dataList)
+	final public function setDataList(DataList $dataList): void
 	{
 		$this->dataList = $dataList;
 	}
 
-	/**
-	 * @return DataList
-	 */
 	final public function getDataList(): DataList
 	{
+		if ($this->dataList === null) {
+			throw new \RuntimeException('DataList not set on component');
+		}
 		return $this->dataList;
 	}
 
-	/**
-	 * @param string $id
-	 */
-	final public function setId(string $id)
+	final public function setId(string $id): void
 	{
 		$this->id = $id;
 	}
 
-	/**
-	 * @return string $id
-	 */
 	final public function getId(): string
 	{
 		return $this->id;

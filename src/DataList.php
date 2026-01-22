@@ -2,9 +2,13 @@
 
 namespace Tnt\DataList;
 
-use dry\db\ResultSet;
+use Countable;
 use Tnt\DataList\Contracts\DataListInterface;
+use Tnt\DataList\Contracts\Filter\FilterableInterface;
 use Tnt\DataList\Contracts\Input\InputInterface;
+use Tnt\DataList\Contracts\Paginate\PaginatableInterface;
+use Tnt\DataList\Contracts\Search\SearchableInterface;
+use Tnt\DataList\Contracts\Sort\SortableInterface;
 use Tnt\DataList\Contracts\Url\BuilderInterface;
 use Tnt\DataList\Filter\Filter;
 use Tnt\DataList\Input\GetParams;
@@ -15,214 +19,179 @@ use Tnt\Dbi\Repository;
 
 class DataList implements DataListInterface
 {
-    /**
-     * @var BuilderInterface $urlBuilder
-     */
-    private $urlBuilder;
+    private BuilderInterface $urlBuilder;
+
+    private Repository $repository;
+
+    private ?Paginator $paginator = null;
+
+    private ?Searcher $searcher = null;
 
     /**
-     * @var Repository $repository
+     * @var array<string, Sorter>
      */
-    private $repository;
+    private array $sorters = [];
 
     /**
-     * @var Paginator $paginator
+     * @var array<string, Filter>
      */
-    private $paginator;
+    private array $filters = [];
 
-    /**
-     * @var Searcher $searcher
-     */
-    private $searcher;
+    private ?Sorter $defaultSorter = null;
 
-    /**
-     * @var array $sorters
-     */
-    private $sorters = [];
-
-    /**
-     * @var array $filters
-     */
-    private $filters = [];
-
-    /**
-     * @var Sorter $defaultSorter
-     */
-    private $defaultSorter;
-
-    /**
-     * DataList constructor.
-     * @param Repository $repository
-     * @param BuilderInterface $urlBuilder
-     */
     public function __construct(Repository $repository, BuilderInterface $urlBuilder)
     {
         $this->repository = $repository;
         $this->urlBuilder = $urlBuilder;
     }
 
-    /**
-     * @return ResultSet
-     */
-    public function getResults(): ResultSet
+    public function getResults(): mixed
     {
         return $this->repository->get();
     }
 
-    /**
-     * @return int
-     */
     public function getResultCount(): int
     {
-        return count($this->repository->get());
+        $results = $this->repository->get();
+        if ($results instanceof Countable || is_array($results)) {
+            return count($results);
+        }
+        return 0;
     }
 
-    /**
-     * @param string $id
-     * @param Searcher $searcher
-     */
-    public function setSearcher(string $id, Searcher $searcher)
+    public function setSearcher(string $id, Searcher $searcher): void
     {
         $this->registerComponent($id, $searcher);
         $this->searcher = $searcher;
     }
 
-    /**
-     * @param string $id
-     * @param Paginator $paginator
-     */
-    public function setPaginator(string $id, Paginator $paginator)
+    public function setPaginator(string $id, Paginator $paginator): void
     {
         $this->registerComponent($id, $paginator);
         $this->paginator = $paginator;
     }
 
-    /**
-     * @param string $id
-     * @param Sorter $sorter
-     */
-    public function addSorter(string $id, Sorter $sorter)
+    public function addSorter(string $id, Sorter $sorter): void
     {
         $this->registerComponent($id, $sorter);
         $this->sorters[$id] = $sorter;
     }
 
-    /**
-     * @param Sorter $sorter
-     */
-    public function setDefaultSorter(Sorter $sorter)
+    public function setDefaultSorter(Sorter $sorter): void
     {
         $this->defaultSorter = $sorter;
     }
 
-    /**
-     * @param string $id
-     * @param Filter $filter
-     */
-    public function addFilter(string $id, Filter $filter)
+    public function addFilter(string $id, Filter $filter): void
     {
         $this->registerComponent($id, $filter);
         $this->filters[$id] = $filter;
     }
 
-    /**
-     * @param string $id
-     * @param Component $component
-     */
-    private function registerComponent(string $id, Component $component)
+    private function registerComponent(string $id, Component $component): void
     {
         $component->setId($id);
         $component->setDataList($this);
     }
 
-    /**
-     * @param ?InputInterface $input
-     */
-    public function apply(?InputInterface $input = null)
+    public function apply(?InputInterface $input = null): void
     {
-        if (empty($input)) {
-          $input = new GetParams();
+        if ($input === null) {
+            $input = new GetParams();
         }
 
+        $repository = $this->repository;
+
         // Apply search
-        if ($this->searcher) {
-            if ($input->has($this->searcher->getId()) && $input->get($this->searcher->getId())) {
-                $this->urlBuilder->setParam($this->searcher->getId(), $input->get($this->searcher->getId()));
-                $this->searcher->apply($this->repository, $input->get($this->searcher->getId()));
+        if ($this->searcher !== null && $repository instanceof SearchableInterface) {
+            $searcherId = $this->searcher->getId();
+            if ($input->has($searcherId)) {
+                $searchValue = $input->get($searcherId);
+                if (is_string($searchValue) || is_int($searchValue)) {
+                    $this->urlBuilder->setParam($searcherId, $searchValue);
+                    if ($searchValue !== '' && $searchValue !== 0) {
+                        $this->searcher->apply($repository, (string) $searchValue);
+                    }
+                }
             }
         }
 
         // Apply sorters
         $sorting = false;
-        foreach ($this->sorters as $sorter) {
-            if ($input->has($sorter->getId()) && $input->get($sorter->getId())) {
-                $sorting = true;
-                $this->urlBuilder->setParam($sorter->getId(), $input->get($sorter->getId()));
-                $sorter->apply($this->repository, $input->get($sorter->getId()));
+        if ($repository instanceof SortableInterface) {
+            foreach ($this->sorters as $sorter) {
+                $sorterId = $sorter->getId();
+                if ($input->has($sorterId)) {
+                    $sortValue = $input->get($sorterId);
+                    if (is_string($sortValue) || is_int($sortValue)) {
+                        $sorting = true;
+                        $this->urlBuilder->setParam($sorterId, $sortValue);
+                        $sorter->apply($repository, (string) $sortValue);
+                    }
+                }
+            }
+
+            // Check if we need the default sorter
+            if (!$sorting && $this->defaultSorter !== null) {
+                $this->defaultSorter->apply($repository);
             }
         }
 
-        // Check if we need the default sorter
-        if (! $sorting && $this->defaultSorter) {
-            $this->defaultSorter->apply($this->repository);
-        }
-
         // Apply filters
-        foreach ($this->filters as $filter) {
-            if ($input->has($filter->getId())) {
-                $this->urlBuilder->setParam($filter->getId(), $input->get($filter->getId()));
-                $filter->apply($this->repository, $input->get($filter->getId()));
+        if ($repository instanceof FilterableInterface) {
+            foreach ($this->filters as $filter) {
+                $filterId = $filter->getId();
+                if ($input->has($filterId)) {
+                    $filterValue = $input->get($filterId);
+                    if (is_string($filterValue) || is_int($filterValue)) {
+                        $this->urlBuilder->setParam($filterId, $filterValue);
+                        $filter->apply($repository, $filterValue);
+                    } elseif (is_array($filterValue)) {
+                        /** @var array<int|string> $filterValue */
+                        $this->urlBuilder->setParam($filterId, $filterValue);
+                        $filter->apply($repository, $filterValue);
+                    }
+                }
             }
         }
 
         // Apply pagination
-        if ($this->paginator) {
-            if ($input->has($this->paginator->getId()) && $input->get($this->paginator->getId())) {
-                $this->urlBuilder->setParam($this->paginator->getId(), $input->get($this->paginator->getId()));
-                $this->paginator->apply($this->repository, $input->get($this->paginator->getId()));
+        if ($this->paginator !== null && $repository instanceof PaginatableInterface) {
+            $paginatorId = $this->paginator->getId();
+            if ($input->has($paginatorId)) {
+                $pageValue = $input->get($paginatorId);
+                if (is_numeric($pageValue)) {
+                    $this->urlBuilder->setParam($paginatorId, (int) $pageValue);
+                    $this->paginator->apply($repository, (int) $pageValue);
+                } else {
+                    $this->paginator->apply($repository, $this->paginator->getDefaultPage());
+                }
             } else {
-                $this->paginator->apply($this->repository, $this->paginator->getDefaultPage());
+                $this->paginator->apply($repository, $this->paginator->getDefaultPage());
             }
         }
     }
 
-    /**
-     * @return Paginator
-     */
-    public function getPaginator(): Paginator
+    public function getPaginator(): ?Paginator
     {
         return $this->paginator;
     }
 
-    /**
-     * @param string $id
-     * @return Filter
-     */
     public function getFilter(string $id): Filter
     {
         return $this->filters[$id];
     }
 
-    /**
-     * @param string $id
-     * @return Sorter
-     */
     public function getSorter(string $id): Sorter
     {
         return $this->sorters[$id];
     }
 
-    /**
-     * @return BuilderInterface
-     */
     public function getUrlBuilder(): BuilderInterface
     {
         return $this->urlBuilder;
     }
 
-    /**
-     * @return Repository
-     */
     public function getRepository(): Repository
     {
         return $this->repository;

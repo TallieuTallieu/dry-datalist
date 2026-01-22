@@ -4,5 +4,5 @@ namespace Tnt\DataList\Contracts\Sort;
 
 interface SortableInterface
 {
-	public function sort($column, string $sortMethod = 'ASC'): SortableInterface;
+	public function sort(string $column, string $sortMethod = 'ASC'): SortableInterface;
 }
