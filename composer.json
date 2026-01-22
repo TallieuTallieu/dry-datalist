@@ -3,10 +3,31 @@
   "description": "",
   "type": "library",
   "minimum-stability": "dev",
-  "require": {},
+  "require": {
+    "tallieutallieu/dry-dbi": "^3.11.1",
+    "php": "^8.2"
+  },
+  "require-dev": {
+    "pestphp/pest": "^3.8",
+    "phpstan/phpstan": "^2.1"
+  },
   "autoload": {
     "psr-4": {
       "Tnt\\DataList\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "phpstan": "phpstan analyse --memory-limit=512M",
+    "phpstan:baseline": "phpstan analyse --memory-limit=512M --generate-baseline"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
     }
   }
 }

@@ -1,0 +1,27 @@
+parameters:
+    ignoreErrors:
+        # These traits are intentionally unused in this library.
+        # They are meant to be used by consumer code (Repository classes).
+        -
+            message: '#^Trait Tnt\\DataList\\Filter\\FilterableTrait is used zero times and is not analysed\.$#'
+            identifier: trait.unused
+            count: 1
+            path: src/Filter/FilterableTrait.php
+
+        -
+            message: '#^Trait Tnt\\DataList\\Paginate\\PaginatableTrait is used zero times and is not analysed\.$#'
+            identifier: trait.unused
+            count: 1
+            path: src/Paginate/PaginatableTrait.php
+
+        -
+            message: '#^Trait Tnt\\DataList\\Search\\SearchableTrait is used zero times and is not analysed\.$#'
+            identifier: trait.unused
+            count: 1
+            path: src/Search/SearchableTrait.php
+
+        -
+            message: '#^Trait Tnt\\DataList\\Sort\\SortableTrait is used zero times and is not analysed\.$#'
+            identifier: trait.unused
+            count: 1
+            path: src/Sort/SortableTrait.php

@@ -2,3 +2,9 @@
 .DS_Store
 /vendor/
 .wakatime-project
+/docker/db/
+node_modules/
+.yarn/
+composer.lock
+yarn.lock
+.env
