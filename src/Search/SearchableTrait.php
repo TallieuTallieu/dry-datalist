@@ -7,14 +7,14 @@ use Tnt\DataList\Search\Criteria\OrLike;
 
 trait SearchableTrait
 {
-	/**
-	 * @param array<string> $columns
-	 */
-	public function search(array $columns, string $value): SearchableInterface
-	{
-		$this->addCriteria(new OrLike($columns, $value));
+    /**
+     * @param array<string> $columns
+     */
+    public function search(array $columns, string $value): SearchableInterface
+    {
+        $this->addCriteria(new OrLike($columns, $value));
 
-		/** @var SearchableInterface $this */
-		return $this;
-	}
+        /** @var SearchableInterface $this */
+        return $this;
+    }
 }

@@ -7,7 +7,10 @@ use Tnt\DataList\Contracts\Paginate\PaginatableInterface;
 
 abstract class Paginator extends Component
 {
-    abstract public function apply(PaginatableInterface $repository, ?int $currentPage): void;
+    abstract public function apply(
+        PaginatableInterface $repository,
+        ?int $currentPage
+    ): void;
     abstract public function getCurrentPage(): int;
     abstract public function getDefaultPage(): ?int;
     abstract public function getNextPageUrl(): string;

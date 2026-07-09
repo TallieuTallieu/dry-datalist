@@ -2,10 +2,12 @@
   "name": "tallieutallieu/dry-datalist",
   "description": "",
   "type": "library",
+  "license": "proprietary",
   "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
-    "tallieutallieu/dry-dbi": "^3.11.1",
-    "php": "^8.2"
+    "tallieutallieu/dry-dbi": "^3.12.1",
+    "php": ">=8.4"
   },
   "require-dev": {
     "pestphp/pest": "^3.8",

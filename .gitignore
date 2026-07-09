@@ -5,6 +5,5 @@
 /docker/db/
 node_modules/
 .yarn/
-composer.lock
-yarn.lock
+.phpunit.cache/
 .env

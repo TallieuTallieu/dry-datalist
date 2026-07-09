@@ -20,19 +20,27 @@ class SimplePaginator extends Paginator
         $this->optional = $optional;
     }
 
-    public function apply(PaginatableInterface $repository, ?int $currentPage): void
-    {
+    public function apply(
+        PaginatableInterface $repository,
+        ?int $currentPage
+    ): void {
         if ($currentPage !== null) {
             $resultCount = $this->getDataList()->getResultCount();
-            $this->pageCount = $resultCount === 0 ? 1 : (int) ceil($resultCount / $this->perPage);
-            $this->currentPage = $currentPage > 0 ? min($currentPage, $this->pageCount) : ($this->getDefaultPage() ?? 1);
+            $this->pageCount =
+                $resultCount === 0
+                    ? 1
+                    : (int) ceil($resultCount / $this->perPage);
+            $this->currentPage =
+                $currentPage > 0
+                    ? min($currentPage, $this->pageCount)
+                    : $this->getDefaultPage() ?? 1;
             $repository->paginate($this->currentPage, $this->perPage);
         }
     }
 
     public function getCurrentPage(): int
     {
-        return $this->currentPage ?: ($this->getDefaultPage() ?? 1);
+        return $this->currentPage ?: $this->getDefaultPage() ?? 1;
     }
 
     public function getDefaultPage(): ?int
@@ -42,17 +50,26 @@ class SimplePaginator extends Paginator
 
     public function getNextPageUrl(): string
     {
-        return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $this->getCurrentPage() + 1)->build();
+        return $this->getDataList()
+            ->getUrlBuilder()
+            ->withParam($this->getId(), $this->getCurrentPage() + 1)
+            ->build();
     }
 
     public function getPrevPageUrl(): string
     {
-        return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $this->getCurrentPage() - 1)->build();
+        return $this->getDataList()
+            ->getUrlBuilder()
+            ->withParam($this->getId(), $this->getCurrentPage() - 1)
+            ->build();
     }
 
     public function getUrlForPage(string $page): string
     {
-        return $this->getDataList()->getUrlBuilder()->withParam($this->getId(), $page)->build();
+        return $this->getDataList()
+            ->getUrlBuilder()
+            ->withParam($this->getId(), $page)
+            ->build();
     }
 
     public function getPageCount(): int

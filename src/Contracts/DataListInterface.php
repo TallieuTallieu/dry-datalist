@@ -2,7 +2,4 @@
 
 namespace Tnt\DataList\Contracts;
 
-interface DataListInterface
-{
-
-}
+interface DataListInterface {}

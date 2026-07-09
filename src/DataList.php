@@ -39,8 +39,10 @@ class DataList implements DataListInterface
 
     private ?Sorter $defaultSorter = null;
 
-    public function __construct(Repository $repository, BuilderInterface $urlBuilder)
-    {
+    public function __construct(
+        Repository $repository,
+        BuilderInterface $urlBuilder
+    ) {
         $this->repository = $repository;
         $this->urlBuilder = $urlBuilder;
     }
@@ -103,14 +105,20 @@ class DataList implements DataListInterface
         $repository = $this->repository;
 
         // Apply search
-        if ($this->searcher !== null && $repository instanceof SearchableInterface) {
+        if (
+            $this->searcher !== null &&
+            $repository instanceof SearchableInterface
+        ) {
             $searcherId = $this->searcher->getId();
             if ($input->has($searcherId)) {
                 $searchValue = $input->get($searcherId);
                 if (is_string($searchValue) || is_int($searchValue)) {
                     $this->urlBuilder->setParam($searcherId, $searchValue);
                     if ($searchValue !== '' && $searchValue !== 0) {
-                        $this->searcher->apply($repository, (string) $searchValue);
+                        $this->searcher->apply(
+                            $repository,
+                            (string) $searchValue
+                        );
                     }
                 }
             }
@@ -156,7 +164,10 @@ class DataList implements DataListInterface
         }
 
         // Apply pagination
-        if ($this->paginator !== null && $repository instanceof PaginatableInterface) {
+        if (
+            $this->paginator !== null &&
+            $repository instanceof PaginatableInterface
+        ) {
             $paginatorId = $this->paginator->getId();
             if ($input->has($paginatorId)) {
                 $pageValue = $input->get($paginatorId);
@@ -164,10 +175,16 @@ class DataList implements DataListInterface
                     $this->urlBuilder->setParam($paginatorId, (int) $pageValue);
                     $this->paginator->apply($repository, (int) $pageValue);
                 } else {
-                    $this->paginator->apply($repository, $this->paginator->getDefaultPage());
+                    $this->paginator->apply(
+                        $repository,
+                        $this->paginator->getDefaultPage()
+                    );
                 }
             } else {
-                $this->paginator->apply($repository, $this->paginator->getDefaultPage());
+                $this->paginator->apply(
+                    $repository,
+                    $this->paginator->getDefaultPage()
+                );
             }
         }
     }
