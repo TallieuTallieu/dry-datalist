@@ -12,15 +12,15 @@ use Tnt\DataList\Url\Builder;
 
 class DataListServiceProvider extends ServiceProvider
 {
-	public function boot(ContainerInterface $app)
-	{
-		// TODO: Implement boot() method.
-	}
+    public function boot(ContainerInterface $app)
+    {
+        // TODO: Implement boot() method.
+    }
 
-	public function register(ContainerInterface $app)
-	{
-		$app->set(BuilderInterface::class, Builder::class);
-		$app->set(DataListInterface::class, DataList::class);
-		$app->set(InputInterface::class, GetParams::class);
-	}
+    public function register(ContainerInterface $app)
+    {
+        $app->set(BuilderInterface::class, Builder::class);
+        $app->set(DataListInterface::class, DataList::class);
+        $app->set(InputInterface::class, GetParams::class);
+    }
 }

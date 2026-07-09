@@ -6,13 +6,13 @@ use Tnt\DataList\Contracts\Input\InputInterface;
 
 class GetParams implements InputInterface
 {
-	public function get(string $key): mixed
-	{
-		return $_GET[$key];
-	}
+    public function get(string $key): mixed
+    {
+        return $_GET[$key];
+    }
 
-	public function has(string $key): bool
-	{
-		return isset($_GET[$key]);
-	}
+    public function has(string $key): bool
+    {
+        return isset($_GET[$key]);
+    }
 }
