@@ -5,6 +5,4 @@
 /docker/db/
 node_modules/
 .yarn/
-composer.lock
-yarn.lock
 .env
