@@ -5,4 +5,5 @@
 /docker/db/
 node_modules/
 .yarn/
+.phpunit.cache/
 .env
