@@ -9,9 +9,6 @@ on:
       - '.gitignore'
       - '.github/**'
 
-env:
-  BITBUCKET_SSH_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
-
 jobs:
   auto-release:
     runs-on: ubuntu-latest
@@ -26,22 +23,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Bitbucket SSH key
-        shell: bash
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          if [ -n "$BITBUCKET_SSH_KEY" ]; then
-            echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-            ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
-          fi
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
 
       - name: Install production dependencies
-        run: make composer-install-prod
+        run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress --no-interaction
 
       - name: Run verification checks
-        run: make composer-validate
+        run: composer validate --strict
 
       - name: Determine version bump type
         id: version-type
