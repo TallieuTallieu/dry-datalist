@@ -1,0 +1,110 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - master
+
+env:
+  BITBUCKET_SSH_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: PHP 8.4 Tests
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Bitbucket SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$BITBUCKET_SSH_KEY" ]; then
+            echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+          fi
+
+      - name: Validate composer.json
+        run: make composer-validate
+
+      - name: Run tests
+        run: make test
+
+  phpstan:
+    runs-on: ubuntu-latest
+    name: PHPStan Static Analysis
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Bitbucket SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$BITBUCKET_SSH_KEY" ]; then
+            echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+          fi
+
+      - name: Run PHPStan
+        run: make phpstan
+
+  prettier:
+    runs-on: ubuntu-latest
+    name: Code Formatting Check
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Bitbucket SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$BITBUCKET_SSH_KEY" ]; then
+            echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+          fi
+
+      - name: Check formatting
+        run: make yarn-format-check
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Check
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Bitbucket SSH key
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$BITBUCKET_SSH_KEY" ]; then
+            echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+          fi
+
+      - name: Security check
+        run: make composer-audit

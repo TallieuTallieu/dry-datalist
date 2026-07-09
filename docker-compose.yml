@@ -30,7 +30,7 @@ services:
       - ./docker/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini:ro
       - ./docker/xdebug/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini:ro
       - ~/.ssh:/root/.ssh:ro
-    command: /bin/bash -c 'eval $$(ssh-agent -s) && ssh-add ~/.ssh/id_rsa && composer install && apachectl -D FOREGROUND'
+    command: /bin/bash -c 'if [ -f ~/.ssh/id_rsa ]; then eval $$(ssh-agent -s) && ssh-add ~/.ssh/id_rsa; fi && composer install && apachectl -D FOREGROUND'
     ports:
       - "80"
     labels:
