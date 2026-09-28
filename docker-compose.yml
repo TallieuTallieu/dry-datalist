@@ -6,7 +6,7 @@ services:
       ADMINER_DESIGN: nette
       UPLOAD_LIMIT: 10G
     labels:
-      - "traefik.http.routers.dry-datalist-adminer.rule=Host(`adminer.dry-datalist.localhost`)"
+      - 'traefik.http.routers.dry-datalist-adminer.rule=Host(`adminer.dry-datalist.localhost`)'
     networks:
       - dev
 
@@ -32,9 +32,9 @@ services:
       - ~/.ssh:/root/.ssh:ro
     command: /bin/bash -c 'if [ -f ~/.ssh/id_rsa ]; then eval $$(ssh-agent -s) && ssh-add ~/.ssh/id_rsa; fi && composer install && apachectl -D FOREGROUND'
     ports:
-      - "80"
+      - '80'
     labels:
-      - "traefik.http.routers.dry-datalist-dev.rule=Host(`dry-datalist.localhost`)"
+      - 'traefik.http.routers.dry-datalist-dev.rule=Host(`dry-datalist.localhost`)'
     networks:
       - dev
 
