@@ -10,7 +10,9 @@ it('builds URLs with scalar and repeated array parameters', function (): void {
     $builder->setParam('page', 2);
     $builder->setParam('status', ['active', 'draft']);
 
-    expect($builder->build())->toBe('/items?page=2&status[]=active&status[]=draft');
+    expect($builder->build())->toBe(
+        '/items?page=2&status[]=active&status[]=draft'
+    );
 });
 
 it('adds fluent parameters on a cloned builder', function (): void {
